@@ -20,25 +20,30 @@ jobs:
       run: npm install @octokit/request@5
 
     - name: Remove 'agenda' label from discussion
-      run: |
-        const { request } = require('@octokit/request');
-
-        const accessToken = process.env.GITHUB_TOKEN;
-        const owner = 'Min2who';
-        const repo = 'CI-CD-test';
-        const discussionNumber = 1; 
-        const appendLabel = 'agenda';
-
-        try {
-          await request({
-            method: 'DELETE',
-            url: `/repos/${owner}/${repo}/discussions/${discussionNumber}/labels/${appendLabel}`,
-            headers: {
-              authorization: `token ${accessToken}`,
-              accept: 'application/vnd.github.v3+json',
-            },
-          });
-          console.log('Label removed successfully.');
-        } catch (error) {
-          console.error('Error removing label:', error.message);
-        }
+      uses: actions/github-script@v6
+      env: 
+        MY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with: 
+        script: |
+          const { request } = require('@octokit/request');
+  
+          const accessToken = process.env.MY_TOKEN;
+          const owner = 'your_username';
+          const repo = 'CI-CD-test';
+          const issueNumber = 1;
+          const appendLabel = 'agenda';
+  
+          try {
+            await request({
+              method: 'DELETE',
+              url: `/repos/${owner}/${repo}/issues/${issueNumber}/labels/${appendLabel}`,
+              headers: {
+                authorization: `token ${accessToken}`,
+                accept: 'application/vnd.github.v3+json',
+              },
+            });
+            console.log('Label removed successfully.');
+          } catch (error) {
+            console.error('Error removing label:', error.message);
+          }
+  
