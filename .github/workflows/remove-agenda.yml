@@ -30,7 +30,7 @@ jobs:
           const accessToken = process.env.MY_TOKEN;
           const owner = 'your_username';
           const repo = 'CI-CD-test';
-          const issueNumber = 1;
+          const issueNumber = 3;
           const appendLabel = 'agenda';
   
           try {
