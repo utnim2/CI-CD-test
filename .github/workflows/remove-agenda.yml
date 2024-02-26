@@ -28,7 +28,7 @@ jobs:
           const { request } = require('@octokit/request');
   
           const accessToken = process.env.MY_TOKEN;
-          const owner = 'your_username';
+          const owner = 'Min2who';
           const repo = 'CI-CD-test';
           const issueNumber = 3;
           const appendLabel = 'agenda';
