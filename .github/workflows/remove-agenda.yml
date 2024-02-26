@@ -2,8 +2,6 @@ name: Search for issues and PR labeled 'agenda' and add them to the agenda
 
 on:
   workflow_dispatch:
-  repository_dispatch:
-    types: remove-agenda-label
 
 jobs:
   search_and_add:
@@ -16,26 +14,31 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '16' 
+        node-version: '18'
 
     - name: Install dependencies
-      run: npm install @octokit/core^5.1.0
+      run: npm install @octokit/request@5
 
-    - name: Remove 'agenda' label from issue
-      uses: actions/github-script@v6
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const octokit = require('@octokit/core').Octokit  
-          const mygithub = new octokit({
-            auth: process.env.GITHUB_TOKEN
+    - name: Remove 'agenda' label from discussion
+      run: |
+        const { request } = require('@octokit/request');
+
+        const accessToken = process.env.GITHUB_TOKEN;
+        const owner = 'Min2who';
+        const repo = 'CI-CD-test';
+        const discussionNumber = 1; 
+        const appendLabel = 'agenda';
+
+        try {
+          await request({
+            method: 'DELETE',
+            url: `/repos/${owner}/${repo}/discussions/${discussionNumber}/labels/${appendLabel}`,
+            headers: {
+              authorization: `token ${accessToken}`,
+              accept: 'application/vnd.github.v3+json',
+            },
           });
-          const owner = 'Min2who';
-          const repo = 'CI-CD-test';
-          const issueNumber = 1;
-          await mygithub.issues.removeLabel({
-            owner,
-            repo,
-            issue_number: issueNumber,
-            name: 'agenda'
-          });
+          console.log('Label removed successfully.');
+        } catch (error) {
+          console.error('Error removing label:', error.message);
+        }
