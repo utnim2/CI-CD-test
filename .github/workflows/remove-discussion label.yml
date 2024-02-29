@@ -13,61 +13,58 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '18'
+        node-version: '14'
 
-    - name: Install octokit/request.js
-      run: npm install @octokit/request@8
+    - name: Install @octokit/request
+      run: npm install @octokit/request@5
 
     - name: Remove 'agenda' label from discussions
       uses: actions/github-script@v4
-      env:
-        REPO_OWNER: utnim2
-        REPO_NAME: CI-CD-test
-        MY_TOKEN: ${{ secrets.PAT_KEY }}
-      with: 
+      with:
+        github-token: ${{ secrets.PAT_KEY }}
         script: |
-          const { Octokit } = require('@octokit/request');
-    
-          const octokit = new Octokit({
-            auth: process.env.MY_TOKEN,
-          });
-    
+          const { request } = require('@octokit/request');
+
           async function removeAgendaLabel() {
             try {
-              const { data: discussions } = await octokit.request.graphql(
-                `
-                query ($owner: String!, $repo: String!, $label: String!) {
-                  repository(owner: $owner, name: $repo) {
-                    discussions(labels: [$label], first: 10) {
-                      nodes {
-                        id
-                        title
+              const { data: discussions } = await request("POST /graphql", {
+                headers: {
+                  authorization: `token ${process.env.GITHUB_TOKEN}`,
+                  accept: "application/vnd.github.v4.idl",
+                },
+                query: `
+                  query ($owner: String!, $repo: String!, $label: String!) {
+                    repository(owner: $owner, name: $repo) {
+                      discussions(labels: [$label], first: 10) {
+                        nodes {
+                          id
+                          title
+                        }
                       }
                     }
                   }
-                }
                 `,
-                {
-                  owner: process.env.REPO_OWNER,
-                  repo: process.env.REPO_NAME,
-                  label: 'agenda'
-                }
-              );
-    
+                owner: process.env.REPO_OWNER,
+                repo: process.env.REPO_NAME,
+                label: 'agenda'
+              });
+
               for (const discussion of discussions.repository.discussions.nodes) {
-                await octokit.request.graphql(
-                  `
-                  mutation ($discussionId: ID!, $labelId: String!) {
-                    removeLabelsFromDiscussion(input: {id: $discussionId, labelIds: [$labelId]}) {
-                      clientMutationId
+                await request("POST /graphql", {
+                  headers: {
+                    authorization: `token ${process.env.GITHUB_TOKEN}`,
+                    accept: "application/vnd.github.v4.idl",
+                  },
+                  query: `
+                    mutation ($discussionId: ID!, $labelId: String!) {
+                      removeLabelsFromDiscussion(input: {id: $discussionId, labelIds: [$labelId]}) {
+                        clientMutationId
+                      }
                     }
-                  }
                   `,
-                  {
-                    discussionId: discussion.id,
-                    labelId: 'agenda'
-                  }
-                );
+                  discussionId: discussion.id,
+                  labelId: 'agenda'
+                });
                 console.log(`'agenda' label removed from discussion: ${discussion.title}`);
               }
             } catch (error) {
@@ -75,5 +72,8 @@ jobs:
               process.exit(1);
             }
           }
-    
+
           removeAgendaLabel();
+      env:
+        REPO_OWNER: utnim2
+        REPO_NAME: CI-CD-test
