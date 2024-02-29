@@ -23,55 +23,56 @@ jobs:
         REPO_OWNER: utnim2
         REPO_NAME: CI-CD-test
         MY_TOKEN: ${{ secrets.PAT_KEY }}
-      run: |
-        const { Octokit } = require("@octokit/rest");
-  
-        const octokit = new Octokit({
-          auth: process.env.MY_TOKEN,
-        });
-  
-        async function removeAgendaLabel() {
-          try {
-            const { data: discussions } = await octokit.rest.graphql(
-              `
-              query ($owner: String!, $repo: String!, $label: String!) {
-                repository(owner: $owner, name: $repo) {
-                  discussions(labels: [$label], first: 10) {
-                    nodes {
-                      id
-                      title
-                    }
-                  }
-                }
-              }
-              `,
-              {
-                owner: process.env.REPO_OWNER,
-                repo: process.env.REPO_NAME,
-                label: 'agenda'
-              }
-            );
-  
-            for (const discussion of discussions.repository.discussions.nodes) {
-              await octokit.rest.graphql(
+      with: 
+        script: |
+          const { Octokit } = require('@octokit/rest');
+    
+          const octokit = new Octokit({
+            auth: process.env.MY_TOKEN,
+          });
+    
+          async function removeAgendaLabel() {
+            try {
+              const { data: discussions } = await octokit.rest.graphql(
                 `
-                mutation ($discussionId: ID!, $labelId: String!) {
-                  removeLabelsFromDiscussion(input: {id: $discussionId, labelIds: [$labelId]}) {
-                    clientMutationId
+                query ($owner: String!, $repo: String!, $label: String!) {
+                  repository(owner: $owner, name: $repo) {
+                    discussions(labels: [$label], first: 10) {
+                      nodes {
+                        id
+                        title
+                      }
+                    }
                   }
                 }
                 `,
                 {
-                  discussionId: discussion.id,
-                  labelId: 'agenda'
+                  owner: process.env.REPO_OWNER,
+                  repo: process.env.REPO_NAME,
+                  label: 'agenda'
                 }
               );
-              console.log(`'agenda' label removed from discussion: ${discussion.title}`);
+    
+              for (const discussion of discussions.repository.discussions.nodes) {
+                await octokit.rest.graphql(
+                  `
+                  mutation ($discussionId: ID!, $labelId: String!) {
+                    removeLabelsFromDiscussion(input: {id: $discussionId, labelIds: [$labelId]}) {
+                      clientMutationId
+                    }
+                  }
+                  `,
+                  {
+                    discussionId: discussion.id,
+                    labelId: 'agenda'
+                  }
+                );
+                console.log(`'agenda' label removed from discussion: ${discussion.title}`);
+              }
+            } catch (error) {
+              console.error(error);
+              process.exit(1);
             }
-          } catch (error) {
-            console.error(error);
-            process.exit(1);
           }
-        }
-  
-        removeAgendaLabel();
+    
+          removeAgendaLabel();
