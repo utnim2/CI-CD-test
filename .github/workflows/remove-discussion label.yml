@@ -16,7 +16,7 @@ jobs:
         node-version: '18'
 
     - name: Install octokit/rest.js
-      run: npm install @octokit/rest@5
+      run: npm install @octokit/rest
 
     - name: Remove 'agenda' label from discussions
       env:
