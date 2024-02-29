@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v5
 
     - name: Setup Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v5
       with:
         node-version: '18'
 
@@ -19,7 +19,7 @@ jobs:
       run: npm install @octokit/request@8
 
     - name: Remove 'agenda' label from discussions
-      uses: actions/github-script@v6
+      uses: actions/github-script@v4
       env:
         REPO_OWNER: utnim2
         REPO_NAME: CI-CD-test
