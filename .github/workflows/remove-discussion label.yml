@@ -8,15 +8,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v6
 
     - name: Setup Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v6
       with:
         node-version: '18'
 
     - name: Install octokit/request.js
-      run: npm install @octokit/request
+      run: npm install @octokit/request@8
 
     - name: Remove 'agenda' label from discussions
       uses: actions/github-script@v6
