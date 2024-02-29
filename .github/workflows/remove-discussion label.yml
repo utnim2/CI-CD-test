@@ -16,7 +16,7 @@ jobs:
         node-version: '18'
 
     - name: Install octokit/rest.js
-      run: npm install @octokit/rest
+      run: npm install @octokit/core
 
     - name: Remove 'agenda' label from discussions
       uses: actions/github-script@v6
@@ -26,7 +26,7 @@ jobs:
         MY_TOKEN: ${{ secrets.PAT_KEY }}
       with: 
         script: |
-          const { Octokit } = require('@octokit/rest');
+          const { Octokit } = require('@octokit/core');
     
           const octokit = new Octokit({
             auth: process.env.MY_TOKEN,
@@ -34,7 +34,7 @@ jobs:
     
           async function removeAgendaLabel() {
             try {
-              const { data: discussions } = await octokit.rest.graphql(
+              const { data: discussions } = await octokit.core.graphql(
                 `
                 query ($owner: String!, $repo: String!, $label: String!) {
                   repository(owner: $owner, name: $repo) {
@@ -55,7 +55,7 @@ jobs:
               );
     
               for (const discussion of discussions.repository.discussions.nodes) {
-                await octokit.rest.graphql(
+                await octokit.core.graphql(
                   `
                   mutation ($discussionId: ID!, $labelId: String!) {
                     removeLabelsFromDiscussion(input: {id: $discussionId, labelIds: [$labelId]}) {
