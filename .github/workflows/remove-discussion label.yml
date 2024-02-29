@@ -21,7 +21,7 @@ jobs:
     - name: Remove 'agenda' label from discussions
       uses: actions/github-script@v4
       with:
-        github-token: ${{ secrets.PAT_KEY }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const { request } = require('@octokit/request');
 
