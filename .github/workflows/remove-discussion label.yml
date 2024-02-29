@@ -19,6 +19,7 @@ jobs:
       run: npm install @octokit/rest
 
     - name: Remove 'agenda' label from discussions
+      uses: actions/github-script@v6
       env:
         REPO_OWNER: utnim2
         REPO_NAME: CI-CD-test
