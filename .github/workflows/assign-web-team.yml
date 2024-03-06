@@ -1,0 +1,38 @@
+name: Request Review from Team
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  assign_team:
+    runs-on: ubuntu-latest
+
+    steps:    
+    - name: Install dependencies
+      run: npm install @octokit/core@5.1.0
+
+    - name: Assign Team
+      uses: actions/github-script@v7
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+      with:
+        script: |
+            const Octokit = require('@octokit/core').Octokit;
+            const octokit = new Octokit({
+              request: { fetch: fetch,},
+              auth: process.env.GITHUB_TOKEN,
+            })
+            
+            await octokit.request('POST /repos/{orgs}/{repo}/pulls/{pull_number}/requested_reviewers', {
+              orgs: 'utnim2',
+              repo: 'CI-CD-test',
+              pull_number: process.env.PULL_REQUEST_NUMBER,
+              team_reviewers: [
+                'web-team'
+              ],
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            })
