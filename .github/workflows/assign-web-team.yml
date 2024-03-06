@@ -1,8 +1,7 @@
 name: Request Review from Team
 
 on:
-  pull_request:
-    types: [opened]
+  workflow_dispatch:
 
 jobs:
   assign_team:
