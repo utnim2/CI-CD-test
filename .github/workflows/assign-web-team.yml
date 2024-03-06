@@ -24,7 +24,7 @@ jobs:
               auth: process.env.GITHUB_TOKEN,
             })
             
-            await octokit.request('POST /repos/{orgs}/{repo}/pulls/{pull_number}/requested_reviewers', {
+            await octokit.request('POST /repos/{orgs}/{repo}/pulls/5/requested_reviewers', {
               orgs: 'utnim2',
               repo: 'CI-CD-test',
               pull_number: process.env.PULL_REQUEST_NUMBER,
