@@ -20,17 +20,17 @@ jobs:
         id: authors
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.PAT_KEY }}
+          # github-token: ${{ secrets.PAT_KEY }}
           script: |
             # const { github } = require('@actions/github');
-            const octokit = github.getOctokit(process.env.github-token);
+            # const octokit = github.getOctokit(process.env.github-token);
             
-            const prNumber = 'YOUR_PR_NUMBER_HERE';
-            const repository = 'OWNER/REPO';
+            const prNumber = '5';
+            const repository = 'utnim2/CI-CD-test';
 
             async function getCoAuthors() {
               try {
-                const commitsResponse = await octokit.paginate("GET /repos/{owner}/{repo}/pulls/{pull_number}/commits", {
+                const commitsResponse = await github.paginate("GET /repos/{owner}/{repo}/pulls/{pull_number}/commits", {
                   owner: repository.split('/')[0],
                   repo: repository.split('/')[1],
                   pull_number: prNumber,
