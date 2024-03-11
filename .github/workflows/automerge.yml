@@ -23,7 +23,7 @@ jobs:
           github-token: ${{ secrets.PAT_KEY }}
           script: |
             # const { github } = require('@actions/github');
-            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+            const octokit = github.getOctokit(process.env.github-token);
             
             const prNumber = 'YOUR_PR_NUMBER_HERE';
             const repository = 'OWNER/REPO';
