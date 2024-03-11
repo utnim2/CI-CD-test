@@ -1,4 +1,4 @@
-name: automerge test
+name: github test
 
 on:
   workflow_dispatch:
