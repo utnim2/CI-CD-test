@@ -11,21 +11,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Get List of authors
         id: authors
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.TOKEN }}
           script: |
             # const { github } = require('@actions/github');
             # const octokit = github.getOctokit(process.env.github-token);
             
-            const prNumber = '5';
+            const prNumber = 5;
             const repository = 'utnim2/CI-CD-test';
 
             async function getCoAuthors() {
