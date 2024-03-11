@@ -30,8 +30,13 @@ jobs:
                     name: data.commit.author.name,
                     email: data.commit.author.email,
                     login: data.commit.author.login,
-                    commiter: data.commit.commiter
-                  }))
+                    commiter: data.commit.committer
+                  })
+                  console.log("name": name)
+                  console.log("email": email)
+                  console.log("login": login)
+                  console.log("co_name": committer.name)
+                  )
                   .filter(author => author.login !== committer.name)
                   .reduce((uniqueAuthors, author) => {
                     if (!uniqueAuthors.some(a => a.email === author.email)) {
