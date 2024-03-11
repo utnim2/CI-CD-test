@@ -31,13 +31,8 @@ jobs:
                     email: data.commit.author.email,
                     login: data.commit.author.login,
                     commiter: data.commit.committer
-                  })
-                  console.log("name": name)
-                  console.log("email": email)
-                  console.log("login": login)
-                  console.log("co_name": committer.name)
-                  )
-                  .filter(author => author.login !== committer.name)
+                  }))
+                  .filter(author => author.email !== commitsResponse[0].commit.author.email)
                   .reduce((uniqueAuthors, author) => {
                     if (!uniqueAuthors.some(a => a.email === author.email)) {
                       uniqueAuthors.push(author);
