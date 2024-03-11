@@ -31,7 +31,7 @@ jobs:
                     email: data.commit.author.email,
                     login: data.commit.author.login,
                   }))
-                  .filter(author => author.login !== 'PR_sender_login')
+                  .filter(author => author.login !== committer.name)
                   .reduce((uniqueAuthors, author) => {
                     if (!uniqueAuthors.some(a => a.email === author.email)) {
                       uniqueAuthors.push(author);
