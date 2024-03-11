@@ -1,0 +1,63 @@
+name: automerge test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get List of authors
+        id: authors
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { github } = require('@actions/github');
+            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+            
+            const prNumber = 'YOUR_PR_NUMBER_HERE';
+            const repository = 'OWNER/REPO';
+
+            async function getCoAuthors() {
+              try {
+                const commitsResponse = await octokit.paginate("GET /repos/{owner}/{repo}/pulls/{pull_number}/commits", {
+                  owner: repository.split('/')[0],
+                  repo: repository.split('/')[1],
+                  pull_number: prNumber,
+                  per_page: 100,
+                });
+                
+                const authors = commitsResponse
+                  .map(data => ({
+                    name: data.commit.author.name,
+                    email: data.commit.author.email,
+                    login: data.commit.author.login,
+                  }))
+                  .filter(author => author.login !== 'PR_sender_login')
+                  .reduce((uniqueAuthors, author) => {
+                    if (!uniqueAuthors.some(a => a.email === author.email)) {
+                      uniqueAuthors.push(author);
+                    }
+                    return uniqueAuthors;
+                  }, [])
+                  .map(author => `Co-authored-by: ${author.name} <${author.email}>`)
+                  .join('\n');
+                console.log(authors);
+                return authors;
+              } catch (error) {
+                console.error('Error fetching commits:', error);
+                return null;
+              }
+            }
+            
+            await getCoAuthors();
