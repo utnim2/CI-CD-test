@@ -30,6 +30,7 @@ jobs:
                     name: data.commit.author.name,
                     email: data.commit.author.email,
                     login: data.commit.author.login,
+                    commiter: data.commit.commiter
                   }))
                   .filter(author => author.login !== committer.name)
                   .reduce((uniqueAuthors, author) => {
